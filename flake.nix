@@ -17,6 +17,7 @@
           busted
           luacov
           luacheck
+          dkjson
         ];
         
         devDeps = with pkgs; [
@@ -72,9 +73,9 @@
             buildInputs = devDeps;
             
             buildPhase = ''
-              export LUA_PATH="./lua/?.lua;./lua/?/init.lua;./spec/?.lua;./spec/?/init.lua;$LUA_PATH"
+              export LUA_PATH="./?.lua;./lua/?.lua;./lua/?/init.lua;./spec/?.lua;./spec/?/init.lua;$LUA_PATH"
               
-              # Set up vim mock inline
+              # Set up vim mock inline  
               cat > vim_mock.lua << 'EOF'
               _G.vim = {
                 tbl_deep_extend = function(behavior, ...)
@@ -97,11 +98,27 @@
                 keymap = { set = function() end },
                 notify = function() end,
                 log = { levels = { DEBUG = 0, INFO = 1, WARN = 2, ERROR = 3 } },
+                json = {
+                  encode = function(data) return require("dkjson").encode(data) end,
+                  decode = function(str) return require("dkjson").decode(str) end
+                },
                 fn = { 
                   has = function(f) return f == "unix" and 1 or 0 end,
                   getpos = function() return {0, 1, 1, 0} end,
                   getline = function() return "0x742d35cc6635c0532925a3b8d3ac25e0b7e4576c" end,
-                  jobstart = function() return 1 end
+                  jobstart = function() return 1 end,
+                  stdpath = function(type) return "/tmp" end,
+                  getcwd = function() return "/test/project" end,
+                  isdirectory = function() return 0 end,
+                  mkdir = function() return true end,
+                  filereadable = function(path) 
+                    if path and path:match("/tmp/eth%-nvim/frecency%.json") then
+                      local file = io.open(path, "r")
+                      if file then file:close() return 1 end
+                    end
+                    return 0
+                  end,
+                  fnamemodify = function(path, modifier) return path end
                 },
                 ui = { select = function(choices, opts, cb) if #choices > 0 then cb(choices[1], 1) end end }
               }

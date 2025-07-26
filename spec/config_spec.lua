@@ -1,4 +1,31 @@
 describe("config", function()
+  -- Setup vim mock inline for CI compatibility
+  if not _G.vim then
+    _G.vim = {
+      fn = {
+        has = function(feature) return feature == "unix" and 1 or 0 end,
+        stdpath = function() return "/tmp" end,
+        getcwd = function() return "/test/project" end,
+        isdirectory = function() return 0 end,
+        mkdir = function() return true end,
+        filereadable = function() return 0 end,
+        fnamemodify = function(path) return path end,
+      },
+      log = { levels = { ERROR = 1, WARN = 2, INFO = 3, DEBUG = 4 } },
+      notify = function() end,
+      keymap = { set = function() end },
+      tbl_deep_extend = function(behavior, ...)
+        local result = {}
+        for _, tbl in ipairs({...}) do
+          for k, v in pairs(tbl) do
+            result[k] = v
+          end
+        end
+        return result
+      end,
+    }
+  end
+  
   local config = require("eth-nvim.config")
 
   before_each(function()

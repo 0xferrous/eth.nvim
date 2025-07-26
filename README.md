@@ -6,6 +6,7 @@ A Neovim plugin for navigating Ethereum addresses and transaction hashes to vari
 
 - 🔍 **Smart Detection**: Automatically detects Ethereum addresses and transaction hashes in visual selections
 - 🌐 **Multiple Explorers**: Support for Etherscan, Arbiscan, Polygonscan, BSCScan, and custom explorers
+- 🧠 **Frecency Ordering**: Smart ordering of explorer options based on frequency and recency of use
 - ⚙️ **Configurable**: Easy to configure with custom block explorers and URL templates
 - 🚀 **Fast**: Lightweight Lua implementation with minimal overhead
 - 🧪 **Well Tested**: Comprehensive test suite with high coverage
@@ -40,8 +41,25 @@ use {
 
 1. **Visual Selection**: Select an Ethereum address or transaction hash in visual mode
 2. **Navigate**: Press `<leader>ee` (default) or run `:lua require('eth-nvim').explore_selection()`
-3. **Choose Explorer**: Select from the configured block explorers
+3. **Choose Explorer**: Select from the configured block explorers (ordered by frecency)
 4. **Open**: The URL opens in your default browser
+
+### Frecency-Based Ordering
+
+The plugin automatically learns your preferences and orders explorer options based on **frecency** - a combination of frequency and recency:
+
+- **Frequently used explorers** appear higher in the list
+- **Recently used explorers** get priority over older selections
+- **Per-directory tracking** adapts to project-specific network preferences
+- **Global fallback** ensures consistent ordering across all projects
+- **Decay over time** ensures the ordering stays relevant to current usage patterns
+
+The frecency system tracks:
+- **Usage count**: How often you select each explorer
+- **Last used timestamp**: When you last used each explorer  
+- **Recent activity**: Additional weight for explorers used in the past week
+- **Directory context**: Separate tracking per project directory
+- **Time-based decay**: Reduces priority for explorers not used recently
 
 ### Examples
 
@@ -204,3 +222,72 @@ The default configuration includes explorers for:
 - **BSC** (BSCScan)
 
 You can easily add support for other networks by configuring custom explorers.
+
+## Frecency Implementation
+
+The frecency system combines frequency and recency to intelligently order explorer options:
+
+### Algorithm Details
+
+**Frecency Score = (Usage Count × Recency Factor) + Recent Usage Bonus**
+
+Where:
+- **Usage Count**: Total number of times an explorer has been selected
+- **Recency Factor**: Time-based multiplier applied based on last usage:
+  - Used < 1 day ago: 4x multiplier
+  - Used < 1 week ago: 2x multiplier  
+  - Used < 1 month ago: 1x multiplier
+  - Used > 1 month ago: 0.5x multiplier
+- **Recent Usage Bonus**: +0.1 for each usage within the past week
+
+### Data Storage
+
+Usage data is stored in `~/.local/share/nvim/eth-nvim/frecency.json` with per-directory tracking:
+
+```json
+{
+  "global": {
+    "Etherscan": {
+      "count": 15,
+      "last_used": 1703123456,
+      "timestamps": [1703123456, 1703109876, ...]
+    },
+    "Arbiscan": {
+      "count": 8,
+      "last_used": 1703000000,
+      "timestamps": [1703000000, 1702999876, ...]
+    }
+  },
+  "directories": {
+    "/home/user/defi-project": {
+      "Etherscan": {
+        "count": 10,
+        "last_used": 1703123456,
+        "timestamps": [1703123456, ...]
+      },
+      "Polygonscan": {
+        "count": 5,
+        "last_used": 1703100000,
+        "timestamps": [1703100000, ...]
+      }
+    },
+    "/home/user/layer2-project": {
+      "Arbiscan": {
+        "count": 12,
+        "last_used": 1703120000,
+        "timestamps": [1703120000, ...]
+      }
+    }
+  }
+}
+```
+
+### Privacy & Performance
+
+- Only the last 20 timestamps are stored per explorer to limit data growth
+- No sensitive information (addresses, transactions) is stored
+- Data persists across Neovim sessions
+- Per-directory tracking adapts to project-specific network usage
+- Automatic fallback to global data when no directory-specific data exists
+- Automatic fallback to original order for new/unused explorers
+- Legacy data format automatically migrated to new per-directory structure
