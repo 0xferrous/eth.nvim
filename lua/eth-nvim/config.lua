@@ -36,8 +36,12 @@ function M.setup(opts)
 
   -- Set up keymaps
   if M.options.keymaps.explore then
-    vim.keymap.set("v", M.options.keymaps.explore, ":<C-u>lua require('eth-nvim').explore_selection()<CR>", 
-    { desc = "Explore Ethereum address/tx in block explorer" })
+    vim.keymap.set(
+      "v",
+      M.options.keymaps.explore,
+      ":<C-u>lua require('eth-nvim').explore_selection()<CR>",
+      { desc = "Explore Ethereum address/tx in block explorer" }
+    )
   end
 end
 
