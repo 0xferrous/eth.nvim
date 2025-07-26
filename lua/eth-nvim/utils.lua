@@ -1,8 +1,36 @@
 local M = {}
 
 function M.get_visual_selection()
+  -- Try the register approach first (works when called from visual mode)
+  local success, selection = pcall(function()
+    -- Save the current register content
+    local reg_save = vim.fn.getreg('"')
+    local regtype_save = vim.fn.getregtype('"')
+    
+    -- Copy visual selection to default register
+    vim.cmd('normal! gv"vy')
+    
+    -- Get the selected text
+    local text = vim.fn.getreg('"')
+    
+    -- Restore the register
+    vim.fn.setreg('"', reg_save, regtype_save)
+    
+    return text
+  end)
+  
+  if success and selection and selection ~= "" then
+    return selection
+  end
+  
+  -- Fallback: use visual marks (works after exiting visual mode)
   local start_pos = vim.fn.getpos("'<")
   local end_pos = vim.fn.getpos("'>")
+  
+  -- Check if marks are valid
+  if start_pos[2] == 0 or end_pos[2] == 0 then
+    return ""
+  end
 
   local start_row, start_col = start_pos[2], start_pos[3]
   local end_row, end_col = end_pos[2], end_pos[3]
