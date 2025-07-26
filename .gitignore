@@ -1,0 +1,46 @@
+# Lua coverage files
+luacov.*.out
+luacov.report.out
+luacov.stats.out
+
+# Test artifacts
+*.tmp
+*.bak
+
+# Nix build results
+result
+result-*
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vimrc.local
+.nvimrc.local
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Log files
+*.log
+
+# Temporary files (only root level vim_mock.lua from Nix builds)
+/vim_mock.lua
+
+# Dependencies (if using external package managers)
+lua_modules/
+.luarocks/
+
+# Cache directories
+.cache/
