@@ -2,6 +2,7 @@ local M = {}
 
 local config = require("eth-nvim.config")
 local utils = require("eth-nvim.utils")
+local frecency = require("eth-nvim.frecency")
 
 function M.build_url(explorer, eth_value, eth_type)
   local template_key = eth_type == "address" and "address_url" or "tx_url"
@@ -25,12 +26,15 @@ function M.show_explorer_menu(eth_value, eth_type)
   end
 
   if #explorers == 1 then
+    frecency.record_usage(explorers[1].name)
     M.open_in_explorer(explorers[1], normalized_value, eth_type)
     return
   end
 
+  local sorted_explorers = frecency.sort_explorers_by_frecency(explorers)
+
   local choices = {}
-  for i, explorer in ipairs(explorers) do
+  for i, explorer in ipairs(sorted_explorers) do
     table.insert(choices, string.format("%d. %s", i, explorer.name))
   end
 
@@ -38,7 +42,9 @@ function M.show_explorer_menu(eth_value, eth_type)
     prompt = string.format("Open %s (%s) in:", eth_type, normalized_value:sub(1, 10) .. "..."),
   }, function(choice, idx)
     if choice and idx then
-      M.open_in_explorer(explorers[idx], normalized_value, eth_type)
+      local selected_explorer = sorted_explorers[idx]
+      frecency.record_usage(selected_explorer.name)
+      M.open_in_explorer(selected_explorer, normalized_value, eth_type)
     end
   end)
 end
