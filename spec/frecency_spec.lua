@@ -1,51 +1,15 @@
 describe("frecency", function()
-  -- Setup vim mock inline for CI compatibility
-  if not _G.vim then
-    _G.vim = {
-      fn = {
-        stdpath = function() return "/tmp" end,
-        getcwd = function() return "/test/project" end,
-        isdirectory = function() return 0 end,
-        mkdir = function() return true end,
-        filereadable = function(path)
-          if path and path:match("/tmp/eth%-nvim/frecency%.json") then
-            local file = io.open(path, "r")
-            if file then file:close() return 1 end
-          end
-          return 0
-        end,
-        fnamemodify = function(path) return path end,
-        has = function(feature) return feature == "unix" and 1 or 0 end,
-      },
-      log = { levels = { ERROR = 1, WARN = 2, INFO = 3, DEBUG = 4 } },
-      notify = function() end,
-      keymap = { set = function() end },
-      json = {
-        encode = function(data) return require("dkjson").encode(data) end,
-        decode = function(str) return require("dkjson").decode(str) end,
-      },
-      ui = { select = function() end },
-      tbl_deep_extend = function(behavior, ...)
-        local result = {}
-        for _, tbl in ipairs({...}) do
-          for k, v in pairs(tbl) do
-            result[k] = v
-          end
-        end
-        return result
-      end,
-    }
-  end
-  
   local frecency = require("eth-nvim.frecency")
 
   local test_data_path = "/tmp/eth-nvim-test-frecency.json"
   local original_stdpath, original_getcwd
 
   before_each(function()
+    -- Store original functions
     original_stdpath = vim.fn.stdpath
     original_getcwd = vim.fn.getcwd
 
+    -- Set up test environment
     vim.fn.stdpath = function(type)
       if type == "data" then
         return "/tmp"
@@ -57,7 +21,7 @@ describe("frecency", function()
       return "/test/project"
     end
 
-    -- Ensure directory exists
+    -- Ensure directory exists and clear test files
     os.execute("mkdir -p /tmp/eth-nvim")
     
     -- Clear frecency file
@@ -67,8 +31,10 @@ describe("frecency", function()
       file:close()
     end
 
+    -- Clear test data file
     local file = io.open(test_data_path, "w")
     if file then
+      file:write("")
       file:close()
     end
   end)

@@ -65,6 +65,52 @@ function M.setup()
       jobstart = function(cmd, opts)
         return 1
       end,
+
+      stdpath = function(type)
+        if type == "data" then
+          return "/tmp"
+        end
+        return "/tmp"
+      end,
+
+      getcwd = function()
+        return "/test/project"
+      end,
+
+      isdirectory = function(path)
+        return 0
+      end,
+
+      mkdir = function(path, mode)
+        return true
+      end,
+
+      filereadable = function(path)
+        if path and path:match("/tmp/eth%-nvim/frecency%.json") then
+          local file = io.open(path, "r")
+          if file then
+            file:close()
+            return 1
+          end
+        end
+        return 0
+      end,
+
+      fnamemodify = function(path, modifier)
+        if modifier == ":p:h" then
+          return path
+        end
+        return path
+      end,
+    },
+
+    json = {
+      encode = function(data)
+        return require("dkjson").encode(data)
+      end,
+      decode = function(str)
+        return require("dkjson").decode(str)
+      end,
     },
 
     ui = {
