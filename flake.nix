@@ -59,7 +59,7 @@
             installPhase = ''
               mkdir -p $out/share/nvim/site/pack/eth-nvim/start/eth-nvim
               cp -r lua $out/share/nvim/site/pack/eth-nvim/start/eth-nvim/
-              cp -r plugin $out/share/nvim/site/pack/eth-nvim/start/eth-nvim/
+              cp README.md $out/share/nvim/site/pack/eth-nvim/start/eth-nvim/
             '';
           };
         };
