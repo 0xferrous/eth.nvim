@@ -23,7 +23,7 @@ describe("frecency", function()
 
     -- Ensure directory exists and clear test files
     os.execute("mkdir -p /tmp/eth-nvim")
-    
+
     -- Clear frecency file
     local file = io.open("/tmp/eth-nvim/frecency.json", "w")
     if file then
@@ -68,7 +68,7 @@ describe("frecency", function()
       end
       frecency.record_usage("Polygonscan")
 
-      -- Project2: Use Polygonscan heavily, Etherscan lightly  
+      -- Project2: Use Polygonscan heavily, Etherscan lightly
       vim.fn.getcwd = function()
         return "/project2"
       end
@@ -117,10 +117,10 @@ describe("frecency", function()
       vim.fn.getcwd = function()
         return "/specific/project"
       end
-      
+
       -- Record minimal usage for BSCScan in this directory
       frecency.record_usage("BSCScan")
-      
+
       -- Record usage in another directory to create different global data
       vim.fn.getcwd = function()
         return "/other/project"
@@ -146,9 +146,12 @@ describe("frecency", function()
         global_fallback_score > specific_score,
         "Global fallback should reflect total usage across all directories"
       )
-      
+
       -- Verify scores are in expected ranges
-      assert.is_true(specific_score >= 4 and specific_score < 5, "Directory-specific score should be around 4.1")
+      assert.is_true(
+        specific_score >= 4 and specific_score < 5,
+        "Directory-specific score should be around 4.1"
+      )
       assert.is_true(global_fallback_score >= 24, "Global fallback score should be around 24.6")
     end)
 
@@ -208,7 +211,7 @@ describe("frecency", function()
       file:close()
 
       assert.is_true(content ~= "", "File should have content")
-      
+
       local data = vim.json.decode(content)
       assert.is_not_nil(data, "Should be able to decode JSON")
 

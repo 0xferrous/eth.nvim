@@ -76,11 +76,11 @@ function M.setup_vim_mock()
             end
           end
         end
-        
-        for _, t in ipairs({...}) do
+
+        for _, t in ipairs({ ... }) do
           merge(t)
         end
-        
+
         return result
       end,
     }
