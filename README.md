@@ -16,7 +16,7 @@ A Neovim plugin for navigating Ethereum addresses and transaction hashes to vari
 
 ```lua
 {
-  "your-username/eth.nvim",
+  "0xferrous/eth.nvim",
   config = function()
     require("eth-nvim").setup({
       -- your configuration here
@@ -29,7 +29,7 @@ A Neovim plugin for navigating Ethereum addresses and transaction hashes to vari
 
 ```lua
 use {
-  "your-username/eth.nvim",
+  "0xferrous/eth.nvim",
   config = function()
     require("eth-nvim").setup()
   end
