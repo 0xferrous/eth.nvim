@@ -1,6 +1,6 @@
 local M = {}
 
--- Compute a nesting depth for a line from a Uniswap-style trace.
+-- Compute a nesting depth for a line from a foundry trace.
 -- We treat each leading '│' as one level and a leading branch '├'/'└' as +1.
 -- Lines without these box-drawing chars get depth 0.
 local function strip_ansi(s)

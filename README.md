@@ -10,7 +10,7 @@ A Neovim plugin for navigating Ethereum addresses and transaction hashes to vari
 - ⚙️ **Configurable**: Easy to configure with custom block explorers and URL templates
 - 🚀 **Fast**: Lightweight Lua implementation with minimal overhead
 - 🧪 **Well Tested**: Comprehensive test suite with high coverage
-- 📄 **Trace Folding**: Optional fold expression to collapse Uniswap-style trace output
+- 📄 **Trace Folding**: Optional fold expression to collapse foundry trace output
 
 ## Installation
 
@@ -129,13 +129,13 @@ require("eth-nvim").setup({
 
 - `:lua require('eth-nvim').explore_selection()` - Explore selected Ethereum address/tx
 - `:lua require('eth-nvim').show_config()` - Show current configuration
-- `:EthTraceFoldEnable` - Enable folding for Uniswap-style traces in the current buffer
+- `:EthTraceFoldEnable` - Enable folding for foundry traces in the current buffer
 - `:EthTraceFoldDisable` - Disable trace folding in the current buffer
 - `:EthTraceFoldToggle` - Toggle trace folding in the current buffer
 
 ## Trace Folding
 
-Enable folding for Uniswap-style traces (with Unicode box-drawing prefixes):
+Enable folding for foundry traces (with Unicode box-drawing prefixes):
 
 ```vim
 :EthTraceFoldEnable

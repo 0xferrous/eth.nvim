@@ -2,7 +2,7 @@
 
 vim.api.nvim_create_user_command("EthTraceFoldEnable", function()
   require("eth-nvim.trace").enable(0)
-end, { desc = "Enable folding for Uniswap-style trace output in current buffer" })
+end, { desc = "Enable folding for foundry trace output in current buffer" })
 
 vim.api.nvim_create_user_command("EthTraceFoldDisable", function()
   require("eth-nvim.trace").disable(0)
