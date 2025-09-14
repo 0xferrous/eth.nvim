@@ -3,6 +3,7 @@ local M = {}
 local config = require("eth-nvim.config")
 local utils = require("eth-nvim.utils")
 local explorers = require("eth-nvim.explorers")
+local trace = require("eth-nvim.trace")
 
 function M.setup(opts)
   config.setup(opts or {})
@@ -29,6 +30,24 @@ end
 
 function M.show_config()
   config.show_current_config()
+end
+
+-- Public helpers to control trace folding programmatically
+function M.enable_trace_folds()
+  trace.enable(0)
+end
+
+function M.disable_trace_folds()
+  trace.disable(0)
+end
+
+function M.toggle_trace_folds()
+  local fm = vim.api.nvim_buf_get_option(0, "foldmethod")
+  if fm == "expr" then
+    trace.disable(0)
+  else
+    trace.enable(0)
+  end
 end
 
 return M
