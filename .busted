@@ -2,6 +2,7 @@ return {
   default = {
     verbose = true,
     coverage = true,
+    helper = 'spec/spec_helper.lua',
     lpath = "lua/?.lua;lua/?/init.lua;spec/?.lua;spec/?/init.lua",
   }
 }

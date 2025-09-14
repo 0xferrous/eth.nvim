@@ -10,6 +10,7 @@ A Neovim plugin for navigating Ethereum addresses and transaction hashes to vari
 - ⚙️ **Configurable**: Easy to configure with custom block explorers and URL templates
 - 🚀 **Fast**: Lightweight Lua implementation with minimal overhead
 - 🧪 **Well Tested**: Comprehensive test suite with high coverage
+- 📄 **Trace Folding**: Optional fold expression to collapse Uniswap-style trace output
 
 ## Installation
 
@@ -43,23 +44,6 @@ use {
 2. **Navigate**: Press `<leader>ee` (default) or run `:lua require('eth-nvim').explore_selection()`
 3. **Choose Explorer**: Select from the configured block explorers (ordered by frecency)
 4. **Open**: The URL opens in your default browser
-
-### Frecency-Based Ordering
-
-The plugin automatically learns your preferences and orders explorer options based on **frecency** - a combination of frequency and recency:
-
-- **Frequently used explorers** appear higher in the list
-- **Recently used explorers** get priority over older selections
-- **Per-directory tracking** adapts to project-specific network preferences
-- **Global fallback** ensures consistent ordering across all projects
-- **Decay over time** ensures the ordering stays relevant to current usage patterns
-
-The frecency system tracks:
-- **Usage count**: How often you select each explorer
-- **Last used timestamp**: When you last used each explorer  
-- **Recent activity**: Additional weight for explorers used in the past week
-- **Directory context**: Separate tracking per project directory
-- **Time-based decay**: Reduces priority for explorers not used recently
 
 ### Examples
 
@@ -145,6 +129,47 @@ require("eth-nvim").setup({
 
 - `:lua require('eth-nvim').explore_selection()` - Explore selected Ethereum address/tx
 - `:lua require('eth-nvim').show_config()` - Show current configuration
+- `:EthTraceFoldEnable` - Enable folding for Uniswap-style traces in the current buffer
+- `:EthTraceFoldDisable` - Disable trace folding in the current buffer
+- `:EthTraceFoldToggle` - Toggle trace folding in the current buffer
+
+## Trace Folding
+
+Enable folding for Uniswap-style traces (with Unicode box-drawing prefixes):
+
+```vim
+:EthTraceFoldEnable
+" Use zM/zR to close/open all folds; za to toggle
+```
+
+Disable or toggle:
+
+```vim
+:EthTraceFoldDisable
+:EthTraceFoldToggle
+```
+
+How it works
+- The fold level is derived from each line’s left prefix:
+  - Leading whitespace is ignored.
+  - Count leading `│` characters (nesting level) after whitespace.
+  - If the line begins with `├` or `└` (after any spaces/`│`), add +1.
+  - No prefix → depth 0 (top level).
+- The plugin sets `foldmethod=expr` and uses `require('eth-nvim.trace').foldexpr` to compute levels.
+- `foldtext` summarizes folded blocks: first line … [N lines] · last line.
+- ANSI escape codes are stripped during parsing, so colored traces work. Virttext/highlight plugins are compatible.
+
+Example
+
+```
+│ ├─ call A   -> depth 2
+│ │ └─ return -> depth 3
+└─ final      -> depth 1
+```
+
+Limitations
+- Requires Unicode box-drawing (`│`, `├`, `└`). Plain ASCII (`|`, `+-`) is not parsed.
+- Mixed/malformed prefixes may yield inconsistent folds.
 
 ## API
 
@@ -153,6 +178,9 @@ require("eth-nvim").setup({
 - `require('eth-nvim').setup(opts)` - Setup plugin with options
 - `require('eth-nvim').explore_selection()` - Explore current visual selection
 - `require('eth-nvim').show_config()` - Display current configuration
+- `require('eth-nvim').enable_trace_folds()` - Enable trace folding in current buffer
+- `require('eth-nvim').disable_trace_folds()` - Disable trace folding in current buffer
+- `require('eth-nvim').toggle_trace_folds()` - Toggle trace folding in current buffer
 
 ### Utility Functions
 
@@ -290,4 +318,4 @@ Usage data is stored in `~/.local/share/nvim/eth-nvim/frecency.json` with per-di
 - Per-directory tracking adapts to project-specific network usage
 - Automatic fallback to global data when no directory-specific data exists
 - Automatic fallback to original order for new/unused explorers
-- Legacy data format automatically migrated to new per-directory structure
+- Legacy data format automatically migrated to new per-directory structureYou can easily add support for other networks by configuring custom explorers.
