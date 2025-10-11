@@ -34,8 +34,8 @@ function M.show_explorer_menu(eth_value, eth_type)
   local sorted_explorers = frecency.sort_explorers_by_frecency(explorers)
 
   local choices = {}
-  for i, explorer in ipairs(sorted_explorers) do
-    table.insert(choices, string.format("%d. %s", i, explorer.name))
+  for _i, explorer in ipairs(sorted_explorers) do
+    table.insert(choices, string.format("%s", explorer.name))
   end
 
   vim.ui.select(choices, {
